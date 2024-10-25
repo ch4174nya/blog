@@ -1,12 +1,14 @@
 ---
-layout: post
 title: The multiple layers of building a system
-tags: distributed systems censorship SDN privacy
+author: ch4174nya
+date: 2020-05-24 10:10:00 +0800
+tags: censorship SDN privacy
+math: true
 ---
 
 This post is written to serve as a reminder (mostly to myself) of what the process of going from an idea (say, a position paper) to an acceptance in a top tier privacy conference _may_ entail. As one can already tell, this is quite a lengthy post, but you may freely skip sections.
 
----
+<!--more-->
 
 ## The Problem:
 
@@ -14,7 +16,9 @@ Alice resides within Charlie's regime, who happens to censor content that he doe
 
 The various existing approaches to address this include Tor and tunneling traffic (commonly called VPNs) over a variety of media. In the context of our work, we attempted to solve this problem using _Decoy Routing_. Under this censorship evasion technique, when Alice sends out a network packet for a blocked website, it should be able to fool Charlie's censoring systems, by not raising an alarm. More precisely, to Charlie it should appear like it is intended for an allowed website.
 
-<img src="../images/decoyRouting.png" alt="Figure 1 from PETS paper" width="1800"/>
+|<img src="{{site.url}}{{site.baseurl}}/assets/img/decoyRouting.png" alt="Figure 1 from PETS paper" width="1800"/>|
+|:--:|
+|*Figure 1 from PETS paper*|
 
 Decoy Routing is a censorship evasion mechanism that that uses "friendly" routers in the Internet as proxy servers. As they are routers, it becomes very difficult to block them. Do take note of the jurisdiction within the censor's control and that the decoy router lies outside it.
 
@@ -44,11 +48,11 @@ All in all, this post is simply for me to document, appreciate and be mindful of
 ---
 
 ## Terminology:
-- covert destination (CD): an IP address that the censor blocks visits to
+- covert destination ($$CD$$): an IP address that the censor blocks visits to
 
-- overt destination (OD): an IP address that the censor allows visits to
+- overt destination ($$OD$$): an IP address that the censor allows visits to
 
-- secret proxy (SP): a proxy server that communicates with the CD on behalf of the client
+- secret proxy ($$SP$$): a proxy server that communicates with the $$CD$$ on behalf of the client
 
 
 ## The Proof of Concept:
@@ -98,27 +102,27 @@ The team was now bigger, including a grad student too. I was only involved part-
 We started by addressing the gaps identified in the PoC, and both the signaling and redirection tasks became more involved.
 
 ### Protocol Design:
-In this version, the client first establishes a regular TLS connection with some overt destination, say OD1. Let `K` be the TLS master secret that the client uses for this connection.
+In this version, the client first establishes a regular TLS connection with some overt destination, say $OD_1$. Let $$K$$ be the TLS master secret that the client uses for this connection.
 - _Signaling: ~~set ToS bit~~ send ICMP ping_
 
-	Next, the client sends a crafted ICMP `echo` message encrypted with the SDN controller's public key, intended for a new destination, say OD2. The encrypted payload in this `ping` packet carries information that acts as a signal for the controller to install redirection flows on the SDN switch.
+	Next, the client sends a crafted ICMP `Echo` message encrypted with the SDN controller's public key, intended for a new destination, say $$OD_2$$. The encrypted payload in this `ping` packet carries information that acts as a signal for the controller to install redirection flows on the SDN switch.
 
-	Note that OD2 shouldn't simply be different from OD1, it has to be a destination that the switch had no flows for. This is so the packet ends up at the controller, which would then decrypt the packet and install required flows. 
+	Note that $$OD_2$$ shouldn't simply be different from $$OD_1$$, it has to be a destination that the switch had no flows for. This is so the packet ends up at the controller, which would then decrypt the packet and install required flows. 
 
 - _Redirection: Separate concerns between controller and a proxy server_
 
-	On receiving the encrypted ICMP packet from the switch, the controller decrypts it with its private key, retrieves the appropriate information (IP of OD1, duration for which the rule is to be installed), and installs the flow rules on the switch so as to redirect _client–OD1_ traffic to the Secret Proxy, SP. Note that in this version, we don't need any modification on the returning traffic as the SP handles that. Also, once the controller completes processing it, the ping packet is also sent onto its intended destination, i.e., OD2.
+	On receiving the encrypted ICMP packet from the switch, the controller decrypts it with its private key, retrieves the appropriate information (IP of $$OD_1$$, duration for which the rule is to be installed), and installs the flow rules on the switch so as to redirect _client–$$OD_1$$_ traffic to the Secret Proxy, $$SP$$. Note that in this version, we don't need any modification on the returning traffic as the $$SP$$ handles that. Also, once the controller completes processing it, the ping packet is also sent onto its intended destination, i.e., $$OD_2$$.
 
-	Now, assuming the rules have been installed, the client sends the first data packet encrypted with the public key of the SP, to OD1. The payload of this packet contains the URL of the covert destination CD, the IP address of OD1, and `K`, the TLS master secret for the connection established between the client and OD1. To the censor this packet appears to be part of the ongoing _client–OD1_ connection, but the rules on the SDN switch forward the packet to SP, which then decrypts it with its private key, and obtains the information it carries.
+	Now, assuming the rules have been installed, the client sends the first data packet encrypted with the public key of the $$SP$$, to $$OD_1$$. The payload of this packet contains the URL of the covert destination $$CD$$, the IP address of $$OD_1$$, and `K`, the TLS master secret for the connection established between the client and $$OD_1$$. To the censor this packet appears to be part of the ongoing _client–$$OD_1$$_ connection, but the rules on the SDN switch forward the packet to $$SP$$, which then decrypts it with its private key, and obtains the information it carries.
 
-	<ins>Now SP does three things, one for each of OD1, CD and the client:</ins>
-	1. _sends a TCP RST packet to OD1_ (spoofing it so the packet appears to be from the original _client--OD1_ TCP flow): In line with the TCP protocol, this packet signals OD1 to terminate the connection with the client, _without_ sending back any messages to the client (otherwise the censor may be alerted).
+	**Now $$SP$$ does three things, one for each of $$OD_1$$ , $$CD$$ and the client:**
+	1. _sends a TCP RST packet to $$OD_1$$_ (spoofing it so the packet appears to be from the original _client--$$OD_1$$_ TCP flow): In line with the TCP protocol, this packet signals $$OD_1$$ to terminate the connection with the client, _without_ sending back any messages to the client (otherwise the censor may be alerted).
 	
-	2. _establishes a connection with the covert destination (CD)_ and requests data: When CD responds with the data, SP extracts it, buffers it and forwards it to the client.
+	2. _establishes a connection with the covert destination ($$CD$$)_ and requests data: When $$CD$$ responds with the data, $$SP$$ extracts it, buffers it and forwards it to the client.
 
-	3. _sends the data received from CD to the client_: In its first packet to the client, SP informs the client that the packets have indeed been redirected (and that it will be receiving content from CD now). This packet, and the  contents of subsequent packets received from CD, are encrypted before sending to the client, using `K` (the master secret that the client earlier shared with SP). SP forwards subsequent responses from the CD back to the client, with the source IP of the packets modified to reflect that of OD1 (so as to keep up the pretense to the censor that the client is communicating with OD1). Additionally, the SP emulates a sender-side TCP implementation (i.e., facilitating congestion and flow control, reliable and in-order delivery. This is necessary, as there is no _real_ TCP connection between the client and SP.
+	3. _sends the data received from $$CD$$ to the client_: In its first packet to the client, $$SP$$ informs the client that the packets have indeed been redirected (and that it will be receiving content from $$CD$$ now). This packet, and the  contents of subsequent packets received from $$CD$$, are encrypted before sending to the client, using `K` (the master secret that the client earlier shared with $$SP$$). $$SP$$ forwards subsequent responses from the $$CD$$ back to the client, with the source IP of the packets modified to reflect that of $$OD_1$$ (so as to keep up the pretense to the censor that the client is communicating with $$OD_1$$). Additionally, the $$SP$$ emulates a sender-side TCP implementation (i.e., facilitating congestion and flow control, reliable and in-order delivery. This is necessary, as there is no _real_ TCP connection between the client and $$SP$$.
 
-Note that, in case the controller fails to install redirection flows on the switch, the said first packet from client would inadvertently get routed to OD1. The response from OD1 would contain an error message, lacking the appropriate acknowledgement that the client expects from the SP. The client would thus terminate  the connection to OD1 and start afresh, from the very beginning.
+Note that, in case the controller fails to install redirection flows on the switch, the said first packet from client would inadvertently get routed to $$OD_1$$. The response from $$OD_1$$ would contain an error message, lacking the appropriate acknowledgement that the client expects from the $$SP$$. The client would thus terminate  the connection to $$OD_1$$ and start afresh, from the very beginning.
 
 
 ### Performance:
@@ -126,7 +130,7 @@ Note that, in case the controller fails to install redirection flows on the swit
 This version was tested against a Deterlab setup consisting of ten Linux machines:
 - three of which acted as SDN switches,
 - one ran the SDN controller
-- six of them were clients (two) and servers (1 CD, 1 proxy, OD1, OD2)
+- six of them were clients (two) and servers (1 $$CD$$, 1 $$SP$$, $$OD_1$$, $$OD_2$$)
 
 To analyze performance for a regular client’s everyday browsing activity, we tested SiegeBreaker with small filesizes (<10MB), indicating static web page downloads. We also tested it for large file sizes of the order of 1 GB, indicating bulk data transfer.
 
@@ -136,9 +140,9 @@ For both these scenarios, _SiegeBreaker_ performed comparably against the comman
 
 ### Pitfalls/Open questions:
 
-- The only purpose OD2 serves is so the packet reaches the controller. Also, the only way for a client to know if DR has been enabled for her is if SP sends data packet containing content from CD, which is quite late in the protocol and she needs to start all over in that case.
+- The only purpose $$OD_2$$ serves is so the packet reaches the controller. Also, the only way for a client to know if DR has been enabled for her is if $$SP$$ sends data packet containing content from $$CD$$, which is quite late in the protocol and she needs to start all over in that case.
 - As with ToS, ICMP is an obvious signal for the censor. Of course, ICMP is used for troubleshooting almost unviersally, but every client using ICMP to request decoy routing is likely to raise the censor's suspicion.
-- Further, the client is expected to figure some OD2 that doesn't exist in the switch flow table, so that a packet destined for OD2 reaches the controller. The odds of the client guessing and arriving at such an IP address is at best, as good as a coin flip. The client is also expected to know the public key of the Secret Proxy beforehand.
+- Further, the client is expected to figure some $$OD_2$$ that doesn't exist in the switch flow table, so that a packet destined for $$OD_2$$ reaches the controller. The odds of the client guessing and arriving at such an IP address is at best, as good as a coin flip. The client is also expected to know the public key of the Secret Proxy beforehand.
 - At this version, the security of the system is weak, partly due to the usage of ICMP packets, which was an additional blow on the signaling mechanism. While the system handles TLS connections, it does so while reusing a prior secret key from a session established with a different party.
 - _Switch selection_, i.e., which switch to be selected for flushing the redirection flow rules? One hop from the client? all?
 
@@ -193,35 +197,35 @@ For an easier understanding, the protocol is divided into three phases:
 	
 	1. The client sends an email to the controller's email address. The payload of this email contains the DR request, encrypted using the public key of the controller, making it non-readable to the client’s email provider or the adversary (censor). On receiving the email, the controller decrypts the message, extracting out 4 fields:
 		- the word "SIEGE"
-		- the TCP Initial Sequence Number (ISN) that the client would eventually use during its handshake with the OD
-		- the IP address of the OD
+		- the TCP Initial Sequence Number (ISN) that the client would eventually use during its handshake with the $$OD$$
+		- the IP address of the $$OD$$
 		- the Diffie Hellman exponent public value, derived by the client using a privately chosen number x
 
 	2. Once the above fields are succesfully extracted, the controller pushes a flow rule on the switch asking it to forward _all_ packets pertaining to the _client-OD_ traffic to itself. 
 
-	3. Next when the client initiates a TCP handshake with the OD, the SYN packet of the handshake bears the same ISN as that shared with the controller via email. As per the flow rule on the switch this packet is sent to the controller, which matches the ISN with the one it had received in the email. The packet is then forwarded to the OD. Thereafter, the client completes the TCP connection and initiates a TLS handshake with the OD, negotiating a session key (ClientODSessionKey)
+	3. Next when the client initiates a TCP handshake with the $$OD$$, the SYN packet of the handshake bears the same ISN as that shared with the controller via email. As per the flow rule on the switch this packet is sent to the controller, which matches the ISN with the one it had received in the email. The packet is then forwarded to the $$OD$$. Thereafter, the client completes the TCP connection and initiates a TLS handshake with the $$OD$$, negotiating a session key (ClientODSessionKey)
 
-	4. In case the client’s SYN packet does not have the expected ISN, the controller continues to poll the packets of the client–OD flow until the timeout period of inspection rule lapses, causing it to expire.
+	4. In case the client’s SYN packet does not have the expected ISN, the controller continues to poll the packets of the client–$$OD$$ flow until the timeout period of inspection rule lapses, causing it to expire.
 
 	At this point in the protocol, the client has authenticated itself with the controller, via the TCP ISN, that she is requesting decoy routing.
 
 - _Hijacking:_
 
-	5. After completing the TLS handshake, the client sends a TLS data packet, carrying the GET request (with OD as the host field), encrypted with the session key that was negotiated with the OD. The inspection rule is still in place, so this packet goes to the controller as well, which replaces the payload of the TLS data packet with the client’s DH exponent (which it received in step 2) and the OD IP with that of the SP. It then forwards this packet to the SP. 
-	6. Further, the controller also updates the redirection rule on the switch, diverting all subsequent packets of the flow to the SP. This rule matches the client-OD flow based on the client’s source port, client IP and OD IP as seen in the TCP SYN packet. This rule is denoted as the _SP redirection rule_, and has an idle timeout associated with it.
-	7. The SP, on receiving the first TLS data packet, assumes that the client intends to use DR. SP terminates the existing client–OD connection by sending a RST packet (like in the previous version). Further, the SP derives a pre-master key (PMK), using client’s DH exponent public value (received in the first TLS data packet) and its own DH private number. The SP (spoofing as OD) then crafts a TLS data packet carrying a random nonce NS, along with its HMAC computed using PMK. To the censor, this appears to be a regular TLS data packet, carrying random bits. The client, however, treats these bits as a nonce and calculates its HMAC. It derives the PMK using its private DH number, and the publicly known DH exponent of SP. Successful verification of the HMAC allows the client to confirm that the DR request was successful.
+	5. After completing the TLS handshake, the client sends a TLS data packet, carrying the GET request (with $$OD$$ as the host field), encrypted with the session key that was negotiated with the $$OD$$. The inspection rule is still in place, so this packet goes to the controller as well, which replaces the payload of the TLS data packet with the client’s DH exponent (which it received in step 2) and the $$OD$$ IP with that of the $$SP$$. It then forwards this packet to the $$SP$$. 
+	6. Further, the controller also updates the redirection rule on the switch, diverting all subsequent packets of the flow to the $$SP$$. This rule matches the client-$$OD$$ flow based on the client’s source port, client IP and $$OD$$ IP as seen in the TCP SYN packet. This rule is denoted as the _SP redirection rule_, and has an idle timeout associated with it.
+	7. The $$SP$$, on receiving the first TLS data packet, assumes that the client intends to use DR. $$SP$$ terminates the existing client–$$OD$$ connection by sending a RST packet (like in the previous version). Further, the $$SP$$ derives a pre-master key (PMK), using client’s DH exponent public value (received in the first TLS data packet) and its own DH private number. The $$SP$$ (spoofing as $$OD$$) then crafts a TLS data packet carrying a random nonce NS, along with its HMAC computed using PMK. To the censor, this appears to be a regular TLS data packet, carrying random bits. The client, however, treats these bits as a nonce and calculates its HMAC. It derives the PMK using its private DH number, and the publicly known DH exponent of $$SP$$. Successful verification of the HMAC allows the client to confirm that the DR request was successful.
 
 - _Proxying:_
 
 	Now the client chooses a Nonce, and uses the PMK to derive a 6-tuple key (See paper for exact details on each key).
-	8. The client now crafts a TLS data packet, including the chosen Nonce, the CD URL (encrypted using one of the above 6 keys), and an HMAC of the URL and Nonce (using another one of the 6 keys). The client sends this packet, addressed to the OD. En-route the packet is redirected by the switch that redirects it to the SP.
-	9. SP on successfully receiving the above TLS data packet, extracts the Nonce, computes the same 6 tuple key. Upon successful HMAC validation, the SP decrypts the URL, connects to CD and requests data. The SP focuses entirely on serving DR requests, without the burden of identifying them from among all flows via costly cryptography operations.
-	10. CD serves the requested content to SP.
-	11. SP encrypts them with the right key out of the 6 keys, and signs them with the corresponding HMAC key. It then sends them back to the client, spoofing the source IP address of the OD (maintaining the state of Client–OD connection). This keeps up the pretense to the client’s censor ISP, that the client is communicating with the OD. Note that the same session, can also be used for requesting content from various other CDs (before the idle timeout expires).
+	8. The client now crafts a TLS data packet, including the chosen Nonce, the $$CD$$ URL (encrypted using one of the above 6 keys), and an HMAC of the URL and Nonce (using another one of the 6 keys). The client sends this packet, addressed to the $$OD$$. En-route the packet is redirected by the switch that redirects it to the $$SP$$.
+	9. $$SP$$ on successfully receiving the above TLS data packet, extracts the Nonce, computes the same 6 tuple key. Upon successful HMAC validation, the $$SP$$ decrypts the URL, connects to $$CD$$ and requests data. The $$SP$$ focuses entirely on serving DR requests, without the burden of identifying them from among all flows via costly cryptography operations.
+	10. $$CD$$ serves the requested content to $$SP$$.
+	11. $$SP$$ encrypts them with the right key out of the 6 keys, and signs them with the corresponding HMAC key. It then sends them back to the client, spoofing the source IP address of the $$OD$$ (maintaining the state of Client–$$OD$$ connection). This keeps up the pretense to the client’s censor ISP, that the client is communicating with the $$OD$$. Note that the same session, can also be used for requesting content from various other $$CD$$s (before the idle timeout expires).
 
 ### Performance:
 
-SiegeBreaker was evaluated against two categories of experiments, controlled and Internet. The former were in-lab setups, and largely done to identify how capable each of our components were. The latter involved using Internet websites for OD and CD. 
+SiegeBreaker was evaluated against two categories of experiments, controlled and Internet. The former were in-lab setups, and largely done to identify how capable each of our components were. The latter involved using Internet websites for $$OD$$ and $$CD$$. 
 
 In both of these scenarios we observed SiegeBreaker to perform considerably well, in comparison to `wget`-- even in the presence of cross-traffic. Moreover, SiegeBreaker had no measurable impact on non-DR traffic due to increasing DR traffic. Non-DR traffic gets forwarded directly by the SDN switch without any intervention from the controller. As the SDN switch has specialized hardware designed to transmit traffic at line rates, the non-DR traffic is not impacted.
 
@@ -235,8 +239,8 @@ I deliberately glossed over cryptographic and security details in the above desc
 - How the protocol works for clients behind a NAT (packets emanating from all of them would bear the same IP address) 
 - What determines the timeout values to be set for the redirection/inspection rules pushed on the switches
 - On exactly which switch(es) should the inspection/redirection rules be pushed so the packet _always_ encounters it
-- Note that the client and SP do not have a true TCP session (established via a TCP handshake) between them. How do they then handle dropped packets, ensure in-ordered delivery, etc.?
-- As I skipped the specifics of the correspondence between the client and SP, Section 6.2 of the paper discusses possible security attacks and our countermeasures against them.
+- Note that the client and $$SP$$ do not have a true TCP session (established via a TCP handshake) between them. How do they then handle dropped packets, ensure in-ordered delivery, etc.?
+- As I skipped the specifics of the correspondence between the client and $$SP$$, Section 6.2 of the paper discusses possible security attacks and our countermeasures against them.
 
 ---
 
