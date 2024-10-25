@@ -5,7 +5,7 @@ theme: jekyll-theme-chirpy
 
 # Change the following value to '/PROJECT_NAME' ONLY IF your site type is GitHub Pages Project sites
 # and doesn't have a custom domain.
-baseurl: /b.log #''
+baseurl: '/b.log' #''
 
 # The language of the webpage › http://www.lingoes.net/en/translator/langcode.htm
 # If it has the same name as one of the files in folder `_data/locales`, the layout language will also be changed,
@@ -28,7 +28,7 @@ tagline: A text-focused Jekyll themed blog   # it will display as the sub-title
 description: >-                        # used by seo meta and the atom feed
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
-url: https://ch4174nya.github.io #''
+url: http://ch4174nya.github.io #''
 
 github:
   username: ch4174nya             # change to your github username
@@ -43,7 +43,7 @@ social:
   # email: example@doamin.com             # change to your email address
   links:
     # The first element serves as the copyright owner's link
-    - https://ch4174nya.github.io
+    - http://ch4174nya.github.io
     # - https://twitter.com/username      # change to your twitter homepage
     # - https://github.com/ch4174nya       # change to your github homepage
     # Uncomment below to add more social links
