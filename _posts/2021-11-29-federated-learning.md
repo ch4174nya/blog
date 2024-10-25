@@ -15,7 +15,7 @@ In this article, we look at the IBM FL Experiment Manager, that I was led the de
 ## What is federated learning?
 Consider the following scenario: a scientist at a hospital wishes to develop a model to predict which existing medications should be provided to patients to mitigate the symptoms of a disease. While some data exists in the hospital database, the number of patients presenting the disease and having taken different medication combinations remains too small to train an accurate machine learning model. Databases all over the globe with similar data exist; but they are guarded by laws or practices, preventing the data from being shared.
 
-| <img src="{{site.url}}{{site.baseurl}}/assets/img/fl-network.webp" alt="Figure 1 from PETS paper" width="1000"/> | 
+| <img src="{{site.url}}{{site.baseurl}}/assets/img/fl-network.webp" alt="FL Network with hospitals" width="1000"/> | 
 |:--:| 
 | *Federated Learning use-case where multiple hospitals benefit from each others’ model parameters* |
 
