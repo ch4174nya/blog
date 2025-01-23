@@ -2,7 +2,7 @@
 title: Federated Learning in 15 minutes
 author: ch4174nya
 date: 2021-11-29 14:10:00 +0800
-tag: federated learning
+tag: ["federated learning", "machine learning", "Jupyter Notebook"]
 ---
 A similar version of this article was also published on [Medium](https://medium.com/@chaitanya_/federated-learning-in-15-minutes-b4b84562838b) in collaboration with colleagues. 
 

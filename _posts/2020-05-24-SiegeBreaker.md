@@ -2,7 +2,7 @@
 title: The multiple layers of building a system
 author: ch4174nya
 date: 2020-05-24 10:10:00 +0800
-tags: censorship SDN privacy
+tags: ["censorship", "SDN", "privacy"]
 math: true
 ---
 
