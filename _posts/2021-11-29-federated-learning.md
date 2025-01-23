@@ -24,7 +24,7 @@ Federated Learning (FL) is a way to apply machine learning to the data, allowing
 The Federated Learning paradigm allows training machine learning models without moving or sharing data by enabling participating entities to each train a local model and share only anonymous model parameters, never data. The parties’ model parameters are exchanged with a central aggregator using the FL protocol. The aggregator fuses (aggregates) the results from the different parties and communicates the consolidated model parameters back to the parties, who use the parameters in their local training on their own data, and the process repeats. The benefit lies in the model parameters having been aggregated across models trained locally on many different datasets. The FL training process continues in this manner for multiple rounds until a stopping criterion is met.
 
 ## The IBM FL Experiment Manager
-To bring the potential of FL to a wider public, researchers and engineers at IBM Research developed the IBM Federated Learning [library] (https://github.com/IBM/federated-learning-lib). The IBM FL library facilitates configuring and executing FL training in an enterprise setting.
+To bring the potential of FL to a wider public, researchers and engineers at IBM Research developed the IBM Federated Learning [library](https://github.com/IBM/federated-learning-lib). The IBM FL library facilitates configuring and executing FL training in an enterprise setting.
 
 As discussed in this post, the IBM FL library supports deep neural networks, linear regression, and k-means, along with many other supervised and unsupervised machine learning and statistical methods. Moreover, the library provides users the ability to add new fusion algorithms, specific models, and so on.
 
