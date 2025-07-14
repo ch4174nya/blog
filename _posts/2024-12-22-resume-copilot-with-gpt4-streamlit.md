@@ -1,7 +1,7 @@
 ---
 title: Resume Copilot with GPT4 + Streamlit
 author: ch4174nya
-date: 2024-01-21 10:10:00 +0800
+date: 2024-12-22 10:10:00 +0800
 tags: ["GenerativeAI", "streamlit", "python"]
 ---
 
@@ -17,7 +17,10 @@ That's how I started prototyping **Resume Copilot** -- a GPT powered tool that:
 - Gives feedback on the overall resume, in terms of missing skills and improving content
 - Compares your resume to actual job descriptions using RAG (Retrieval-Augmented Generation)
 
-### What the App Does
+## What the App Does
+
+<img src="{{site.url}}{{site.baseurl}}/assets/img/resume-copilot-architecture.png" alt="Resume Copilot Architecture" width="800"/>
+
 
 I ideated this prototype with the following features in mind: 
 - Upload your resume as a PDF
@@ -28,12 +31,12 @@ I ideated this prototype with the following features in mind:
 
 i.e., with a clear focus: no login, no fluff just helpful feedback in a few clicks.
 
-### The Stack
+## The Stack
 
-#### Streamlit for UI
+### Streamlit for UI
 I used Streamlit to rapidly create a clean UI with a resume PDF uploader, some LLM output text areas (with some of them hidden away to take advantage of streamlit components) and buttons to trigger various functionalities.
 
-#### PyMuPDF to Extract Resume Text
+### PyMuPDF to Extract Resume Text
 I used `PyMuPDF` to extract text from the uploaded PDF resume, as it is fast, clean and handles multi-page files.
 ```python
 import fitz
@@ -46,14 +49,14 @@ def extract_text_from_pdf(file):
     return text
 ```
 
-#### GPT-4o-mini for intelligence
+### GPT-4o-mini for intelligence
 I used OpenAI's `GPT-4o-mini` model for:
 - role matching (_Suggest 3 job titles matching this resume..._)
 - resume bullet point revisions
 - feedback generation for the overall resume (e.g., missing skills, turning vague points to impactful ones, etc.)
 - comparison against a given job description
 
-#### RAG-powered JD Comparator
+### RAG-powered JD Comparator
 I added a second page to the app for comparing any given job description with the resume:
 1. Resume Parsing + Chunking: the resume PDF gets chunked into smaller sections
 2. Emmbeddings + Vector DB: Each chunk is embedded using SentenceTransformers and stored in a local FAISS index
@@ -63,7 +66,7 @@ I added a second page to the app for comparing any given job description with th
 This is the RAG pattern and made the feedback far more relevant and targeted to the give role.
 
 
-### My Learnings
+## My Learnings
 - Prompt Design matters -- even small tweaks can change output quality dramatically. For instance, the overall feedback was being generated on the text version of the resume PDF. Therefore I had to modify the prompt such that the LLM skips feedback on headings and such as plaintext is devoid of such richness anyway.
 - The LLM did a fine job at suggesting roles but might need fine-tuning for some industry-specific resumes.
 - RAG-powered feedback is far more useful as it is targeted to the given role. Using this I was able to ground the LLM's output in the context of the provided role.
@@ -72,20 +75,18 @@ This is the RAG pattern and made the feedback far more relevant and targeted to 
 
 Adding RAG into the flow was a game-changer, it transitions the app from AI-feature to real AI product.
 
-### Try It Out
+## Try It Out
 - [Live Demo](https://genai-resume-copilot-aaz7xhssqfnn3auazspr4u.streamlit.app/)
 - [GitHub Repo](https://github.com/ch4174nya/genAI-resume-copilot)
 
 
-### Screenshot
-| <img src="{{site.url}}{{site.baseurl}}/assets/img/demo-resume-copilot.gif" alt="Demo gif" width="800"/> | 
-<!-- |:--:|  -->
-<!-- | *High-level architecture for data flowing through SAFER* | -->
+## Screenshot
+<img src="{{site.url}}{{site.baseurl}}/assets/img/demo-resume-copilot.gif" alt="Demo gif" width="800"/>
 
 ---
 ---
 
-### What’s Next?
+## What’s Next?
 While this was a fun hands-on project to try out GenAI product development, real-world user value and speed prototyping, I can already think of upgrades like:
 - Matching resumes against real job descriptions (via scraping or APIs)
 - Saving feedback history per user
