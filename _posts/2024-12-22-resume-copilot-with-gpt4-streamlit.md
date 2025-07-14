@@ -58,20 +58,20 @@ I used OpenAI's `GPT-4o-mini` model for:
 
 ### RAG-powered JD Comparator
 I added a second page to the app for comparing any given job description with the resume:
-1. Resume Parsing + Chunking: the resume PDF gets chunked into smaller sections
-2. Emmbeddings + Vector DB: Each chunk is embedded using SentenceTransformers and stored in a local FAISS index
-3. User provded JD: Embeddings for the job description are generated and used as a query to retrieve the top-5 most similar resume chunks
-4. GPT-4 feedback: The retrieved chunks + JD are passed to GPT-4o-mini to generate feedback along the lines of alignment, gaps and suggestions.
+1. **Resume Parsing + Chunking**: the resume PDF gets chunked into smaller sections
+2. **Embeddings + Vector DB**: Each chunk is embedded using SentenceTransformers and stored in a local FAISS index
+3. **User provided JD**: Embeddings for the job description are generated and used as a query to retrieve the top-5 most similar resume chunks
+4. **GPT-4 feedback**: The retrieved chunks + JD are passed to GPT-4o-mini to generate feedback along the lines of alignment, gaps and suggestions.
 
 This is the RAG pattern and made the feedback far more relevant and targeted to the give role.
 
 
 ## My Learnings
-- Prompt Design matters -- even small tweaks can change output quality dramatically. For instance, the overall feedback was being generated on the text version of the resume PDF. Therefore I had to modify the prompt such that the LLM skips feedback on headings and such as plaintext is devoid of such richness anyway.
+- Prompt Design matters -- even small tweaks can change output quality dramatically. For instance, the overall feedback was being generated on the text version of the resume PDF. Therefore, I had to modify the prompt such that the LLM skips feedback on headers and subheadings as plaintext is devoid of such richness anyway.
 - The LLM did a fine job at suggesting roles but might need fine-tuning for some industry-specific resumes.
 - RAG-powered feedback is far more useful as it is targeted to the given role. Using this I was able to ground the LLM's output in the context of the provided role.
 - Streamlit's simplicity makes it ideal for demos, and fast feedback loops.
-- While the core functionality relies heavily on the LLM being used and how good it is (cue prompt engineering!), a real-world tool needs more things-- UX, clarity and speed.
+- While the core functionality relies heavily on the LLM being used and how good it is (plus prompt engineering!), a real-world tool needs more things-- UX, clarity and speed.
 
 Adding RAG into the flow was a game-changer, it transitions the app from AI-feature to real AI product.
 
@@ -80,7 +80,7 @@ Adding RAG into the flow was a game-changer, it transitions the app from AI-feat
 - [GitHub Repo](https://github.com/ch4174nya/genAI-resume-copilot)
 
 
-## Screenshot
+## Screengrab
 <img src="{{site.url}}{{site.baseurl}}/assets/img/demo-resume-copilot.gif" alt="Demo gif" width="800"/>
 
 ---
