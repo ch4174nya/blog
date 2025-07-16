@@ -76,8 +76,7 @@ This is the RAG pattern and made the feedback far more relevant and targeted to 
 Adding RAG into the flow was a game-changer, it transitions the app from AI-feature to real AI product.
 
 ## Try It Out
-- [Live Demo](https://genai-resume-copilot-aaz7xhssqfnn3auazspr4u.streamlit.app/)
-- [GitHub Repo](https://github.com/ch4174nya/genAI-resume-copilot)
+[Live Demo](https://genai-resume-copilot-aaz7xhssqfnn3auazspr4u.streamlit.app/)
 
 
 ## Screengrab
