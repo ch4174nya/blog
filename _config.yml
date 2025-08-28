@@ -23,7 +23,7 @@ timezone: Asia/Singapore
 
 title: b.log                           # the main title
 
-tagline: A text-focused Jekyll themed blog   # it will display as the sub-title
+tagline: A tech-focused Jekyll themed blog   # it will display as the sub-title
 
 description: >-                        # used by seo meta and the atom feed
 
